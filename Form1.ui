@@ -45,7 +45,7 @@
     <widget class="QCommandLinkButton" name="cbtn_clr">
      <property name="geometry">
       <rect>
-       <x>310</x>
+       <x>10</x>
        <y>320</y>
        <width>111</width>
        <height>41</height>
@@ -77,11 +77,8 @@
        <height>111</height>
       </rect>
      </property>
-     <property name="documentTitle">
-      <string/>
-     </property>
      <property name="placeholderText">
-      <string>Hello the world...</string>
+      <string>请输入要发送的内容</string>
      </property>
     </widget>
     <widget class="QPushButton" name="Btn_Send">

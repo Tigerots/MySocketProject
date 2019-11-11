@@ -3,12 +3,14 @@
 # @Time: 2019/11/8
 # @Author: Tigerots
 
-
+import datetime
 import socket
 import sys
+
 # 这里引入了PyQt5.QtWidgets模块，这个模块包含了基本的组件。
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QTableWidget, QTableWidgetItem
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QHeaderView
 # 窗口代码自动生成, 最后不要和应用程序放到一个文件, 方便以后更新
 from MyTcpTool import tcp_logic
 
@@ -51,37 +53,24 @@ class Form1Win(tcp_logic.TcpLogic):
         self.comboBox_IP.addItems(self.IpTypeList)
         # 窗口重新初始化
         self.cbx_tcp_Changed()
-    # ===========================================================================
+        # 表格初始化===================================================================
+        # 设置数据层次结构
+        self.model = QStandardItemModel(10, 4)
+        # 设置水平方向头标签文本内容
+        self.model.setHorizontalHeaderLabels(['类型', '地址', '端口','时间'])
 
-        # 表格初始化
-        self.tbl_history.setWindowTitle("连接历史记录")  # 设置表格名称
-        # self.tbl_history.setWindowIcon(QIcon("ok.png"))  # 设置图标（图片要存在）
-        self.tbl_history = QTableWidget(5, 5)  # 设置列数
-        self.tbl_history.setColumnCount(5)
-        # 设置表头
-        column_name = [
-            'Type',
-            'IP',
-            'Port',
-            'Date',
-            'Time',
-        ]
-        self.tbl_history.setHorizontalHeaderLabels(column_name)  # 设置列名称
-        row_name = [
-            '1',
-            '2',
-            '3',
-            '4',
-            '5',
-        ]
-        self.tbl_history.setVerticalHeaderLabels(row_name)  # 设置行名称
-        self.tbl_history.setItem(1, 1, QTableWidgetItem("data"))  # 设置表格内容(行， 列) 文字
-
-        # self.tbl_history.setRowCount(5)  # 设置行数
-        # self.setColumnWidth(0, 200)  # 设置列宽(第几列， 宽度)
-        # self .setRowHeight(0, 100)  # 设置行高(第几行， 行高)
-
-    # ===========================================================================
+        nowTime=str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        self.model.setItem(0, 0, QStandardItem("TCP Client"))
+        self.model.setItem(0, 1, QStandardItem("222.222.19.106"))
+        self.model.setItem(0, 2, QStandardItem("9000"))
+        self.model.setItem(0, 3, QStandardItem('%s' % (nowTime)))
+        self.tbl_history.setModel(self.model)
+        # 水平方向标签拓展剩下的窗口部分，填满表格
+        # self.tbl_history.horizontalHeader().setStretchLastSection(True)
+        # 水平方向，表格大小拓展到适当的尺寸
+        # self.tbl_history.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # TODO 这个表格要怎么用还没想好
+    # 以下区域定义函数=================================================================
 
     # 绑定pushButten和comboBox信号与槽Signals & slots
     def connect(self):
