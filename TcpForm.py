@@ -12,12 +12,13 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QHeaderView
 # 窗口代码自动生成, 最后不要和应用程序放到一个文件, 方便以后更新
-from MyTcpTool import tcp_logic
+from MyTcpTool import tcplogic
+from MyTcpTool import udplogic
 
 
 
 # 主窗口类
-class Form1Win(tcp_logic.TcpLogic):
+class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic):
     # 信号槽机制：设置一个信号，用于触发接收区写入动作
     signal_write_msg = QtCore.pyqtSignal(str)
 
@@ -72,12 +73,12 @@ class Form1Win(tcp_logic.TcpLogic):
         # TODO 这个表格要怎么用还没想好
     # 以下区域定义函数=================================================================
 
-    # 绑定pushButten和comboBox信号与槽Signals & slots
+    # 绑定pushButton和comboBox信号与槽Signals & slots
     def connect(self):
         # 按键 btn
-        self.Btn_OpenTcp.clicked.connect(self.btn_tcp_open)
+        self.Btn_OpenTcp.clicked.connect(self.btn_socket_open)
         self.Btn_Send.clicked.connect(self.Btn_TcpSendData)
-        # 列表框 commbox, 这里为啥下拉列表时会自动收回呢?
+        # 列表框 combobox, 这里为啥下拉列表时会自动收回呢?
         self.comboBox_TCP.currentTextChanged.connect(self.cbx_tcp_Changed)
         self.comboBox_IP.currentIndexChanged.connect(self.IpChanged)
         # 菜单栏
@@ -120,48 +121,44 @@ class Form1Win(tcp_logic.TcpLogic):
             s.close()
 
     # 打开或关闭网络链接, 函数名要求小写, 类名第一个字母大写
-    def btn_tcp_open(self):
+    def btn_socket_open(self):
         # 网络没有连接
         if self.link is False:
             if self.comboBox_TCP.currentIndex() == 0:
                 self.tcp_server_start()
-
-                self.Btn_OpenTcp.setText("关闭连接")
-                self.S_Port.setText("Port: " + self.lineEdit_Port.text())
-                self.S_IP.setText("IP: " + self.comboBox_IP.currentText())
-                self.status.showMessage("成功连接到网络...")
-                self.link = True
-                pass
             elif self.comboBox_TCP.currentIndex() == 1:
                 self.tcp_client_start()
-
-                self.Btn_OpenTcp.setText("关闭连接")
-                self.S_Port.setText("Port: " + self.lineEdit_Port.text())
-                self.S_IP.setText("IP: " + self.comboBox_IP.currentText())
-                self.status.showMessage("成功连接到网络...")
-                self.link = True
             elif self.comboBox_TCP.currentIndex() == 2:
-                pass
+                self.udp_server_start()
             elif self.comboBox_TCP.currentIndex() == 3:
-                pass
-            else:
-                pass
-        # 网络连接
+                self.udp_client_start()
+            self.Btn_OpenTcp.setText("关闭连接")
+            self.S_Port.setText("Port: " + self.lineEdit_Port.text())
+            self.S_IP.setText("IP: " + self.comboBox_IP.currentText())
+            self.status.showMessage("成功连接到网络...")
+            self.link = True
+        # 网络连接时,关闭连接
         else:
             if self.comboBox_TCP.currentIndex() == 0 or self.comboBox_TCP.currentIndex() == 1:
                 self.tcp_close()
-
-                self.S_IP.setText("IP: ")
-                self.S_Port.setText("Port: ")
-                self.Btn_OpenTcp.setText("打开连接")
-                self.status.showMessage("断开网络连接...")
-                self.link = False
-            pass
+            elif self.comboBox_TCP.currentIndex() == 2 or self.comboBox_TCP.currentIndex() == 3:
+                self.udp_close()
+            else:
+                pass
+            self.S_IP.setText("IP: ")
+            self.S_Port.setText("Port: ")
+            self.Btn_OpenTcp.setText("打开连接")
+            self.status.showMessage("断开网络连接...")
+            self.link = False
 
     def Btn_TcpSendData(self):
         if self.comboBox_TCP.currentIndex()==0 or self.comboBox_TCP.currentIndex()==1:
             self.tcp_send()
-            self.status.showMessage("发送数据")
+        elif self.comboBox_TCP.currentIndex()==2 or self.comboBox_TCP.currentIndex()==3:
+            self.udp_send()
+        else:
+            pass
+        self.status.showMessage("发送数据")
 
 
     def cbx_tcp_Changed(self):
