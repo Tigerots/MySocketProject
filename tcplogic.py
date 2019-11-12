@@ -8,6 +8,8 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QTableWidget
 
 import sys
+sys.dont_write_bytecode = True
+
 import time
 import socket
 import threading

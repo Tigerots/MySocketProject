@@ -6,6 +6,7 @@
 import datetime
 import socket
 import sys
+sys.dont_write_bytecode = True
 
 # 这里引入了PyQt5.QtWidgets模块，这个模块包含了基本的组件。
 from PyQt5 import QtCore, QtGui
@@ -47,7 +48,7 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic):
         # 增加公司服务器默认IP
         self.comboBox_TCP.addItems(self.TcpTypeList)
 
-        self.textEdit_Send.setText("Hello the world...")
+        self.textEdit_Send.setText("Hello my world...")
 
 
         # 执行初始化函数
