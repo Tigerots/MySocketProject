@@ -272,20 +272,10 @@
     <property name="elideMode">
      <enum>Qt::ElideNone</enum>
     </property>
-    <widget class="QWidget" name="tab_client">
+    <widget class="QWidget" name="tab_1">
      <attribute name="title">
       <string>客户端列表</string>
      </attribute>
-     <widget class="QListView" name="listView">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>341</width>
-        <height>301</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QCommandLinkButton" name="cbtn_all">
       <property name="geometry">
        <rect>
@@ -297,6 +287,16 @@
       </property>
       <property name="text">
        <string>全选</string>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="listWidget_client">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>341</width>
+        <height>291</height>
+       </rect>
       </property>
      </widget>
     </widget>

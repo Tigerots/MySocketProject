@@ -6,26 +6,24 @@
 import datetime
 import socket
 import sys
+# 不生成__pyche__文件
+from PyQt5.QtCore import QStringListModel
+
 sys.dont_write_bytecode = True
 
 # 这里引入了PyQt5.QtWidgets模块，这个模块包含了基本的组件。
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QHeaderView
+from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QListWidgetItem
 # 窗口代码自动生成, 最后不要和应用程序放到一个文件, 方便以后更新
 from MyTcpTool import tcplogic
 from MyTcpTool import udplogic
+from MyTcpTool import signalEmit
 
 
 
 # 主窗口类
-class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic):
-    # 信号槽机制：设置一个信号，用于触发接收区写入动作
-    signal_write_msg = QtCore.pyqtSignal(str)
-
-    TcpTypeList = ["TCP服务器","TCP客户端","UDP服务器","UDP客户端",]
-    IpTypeList = ["222.222.19.106",]#公司服务器
-
+class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic, signalEmit.SignalEmit):
     def __init__(self):
         super(Form1Win, self).__init__()
         # 禁止最大化, 禁止拉伸
@@ -46,24 +44,31 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic):
         self.status.addPermanentWidget(self.S_IP, stretch=0)
         self.status.addPermanentWidget(self.S_Port, stretch=0)
         # 增加公司服务器默认IP
-        self.comboBox_TCP.addItems(self.TcpTypeList)
-
+        TcpTypeList = ["TCP服务器", "TCP客户端", "UDP服务器", "UDP客户端", ]
+        self.comboBox_TCP.addItems(TcpTypeList)
+        # 默认发送内容
         self.textEdit_Send.setText("Hello my world...")
-
+        # TODO Hex发送和定时发送还没写,以后用到了再写吧
 
         # 执行初始化函数
         self.connect()# 初始化信号-槽
         # 启动时获取本机IP放到IP列表
         self.click_get_ip()
-        self.comboBox_IP.addItems(self.IpTypeList)
+        IpTypeList = ["222.222.19.106", ]  # 公司服务器
+        self.comboBox_IP.addItems(IpTypeList)
         # 窗口重新初始化
         self.cbx_tcp_Changed()
         # 表格初始化===================================================================
-        # 设置数据层次结构
+        # listView
+        self.str_item = "222.222.19.106:9000" # 添加数据
+        self.listWidget_client.addItem(QListWidgetItem(self.str_item))# 添加数据
+        # self.str_item = "192.168.1.151:9000"  # 添加数据
+        # self.listWidget_client.addItem(QListWidgetItem(self.str_item))
+
+        # table view 设置数据层次结构
         self.model = QStandardItemModel(10, 4)
         # 设置水平方向头标签文本内容
         self.model.setHorizontalHeaderLabels(['类型', '地址', '端口','时间'])
-
         nowTime=str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         self.model.setItem(0, 0, QStandardItem("TCP Client"))
         self.model.setItem(0, 1, QStandardItem("222.222.19.106"))
@@ -95,12 +100,23 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic):
         self.cbtn_clr.clicked.connect(self.cbtn_clr_recv)
         # 信号槽
         self.signal_write_msg.connect(self.write_msg)
+        self.signal_list_ip.connect(self.change_list_ip)
         pass
 
+    # 有新客户端连接, 将客户端IP缓存
+    def change_list_ip(self, msg):
+        for i in range(0, self.listWidget_client.count()):
+            text_list = self.listWidget_client.item(i).text()
+            if text_list == msg:
+                return
+        # 新的客户端IP显示到列表, 去除重复的
+        self.listWidget_client.addItem(QListWidgetItem(msg))
+
+    # 清除接收区
     def cbtn_clr_recv(self):
         self.textEdit_recv.clear()
         pass
-    # signal_write_msg信号会触发这个函数
+
     # 功能函数，向接收区写入数据的方法, 信号-槽触发
     # PyQt程序的子线程中，直接向主线程的界面传输字符是不符合安全原则的
     def write_msg(self, msg):

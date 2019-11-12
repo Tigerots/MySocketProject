@@ -15,9 +15,10 @@ import socket
 import threading
 from MyTcpTool import stopThreading
 from MyTcpTool import Form1
+from MyTcpTool import signalEmit
 
 
-class TcpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget):
+class TcpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget, signalEmit.SignalEmit):
     def __init__(self):
         QMainWindow.__init__(self)
         Form1.Ui_MainWindow.__init__(self)

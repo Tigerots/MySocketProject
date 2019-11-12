@@ -14,9 +14,10 @@ import socket
 import threading
 from MyTcpTool import stopThreading
 from MyTcpTool import Form1
+from MyTcpTool import signalEmit
 
 
-class UdpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget):
+class UdpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget, signalEmit.SignalEmit):
     def __init__(self):
         QMainWindow.__init__(self)
         Form1.Ui_MainWindow.__init__(self)
@@ -51,6 +52,8 @@ class UdpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget):
             msg = recv_msg.decode('utf-8')
             msg = '来自IP:{}端口:{}:\n{}\n'.format(recv_addr[0], recv_addr[1], msg)
             self.signal_write_msg.emit(msg)
+            msg = "{0}:{1}".format(recv_addr[0], recv_addr[1])
+            self.signal_list_ip.emit(msg)
 
     # 确认UDP客户端的ip及地址
     def udp_client_start(self):
@@ -85,6 +88,8 @@ class UdpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget):
             try:
                 send_msg = (str(self.textEdit_Send.toPlainText())).encode('utf-8')
                 if self.comboBox_TCP.currentIndex() == 2:
+                    a, b = self.listWidget_client.currentItem().text().split(":")# 将数据发送到选中的客户端
+                    self.address = (str(a), int(b))
                     self.udp_socket.sendto(send_msg, self.address)
                     msg = 'UDP客户端已发送\n'
                     self.signal_write_msg.emit(msg)
