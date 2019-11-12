@@ -44,8 +44,11 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic):
         #self.status.addPermanentWidget(self.S_Sta, stretch=0)
         self.status.addPermanentWidget(self.S_IP, stretch=0)
         self.status.addPermanentWidget(self.S_Port, stretch=0)
-
+        # 增加公司服务器默认IP
         self.comboBox_TCP.addItems(self.TcpTypeList)
+
+        self.textEdit_Send.setText("Hello the world...")
+
 
         # 执行初始化函数
         self.connect()# 初始化信号-槽
@@ -87,8 +90,9 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic):
         self.checkBox_GapTime.toggled.connect(self.cbx_GapTime)
         self.checkBox_Hex.toggled.connect(self.cbx_Hex)
         self.lineEdit_GapTime.textChanged.connect(self.edt_GapTime)
-
+        # 清空按键
         self.cbtn_clr.clicked.connect(self.cbtn_clr_recv)
+        # 信号槽
         self.signal_write_msg.connect(self.write_msg)
         pass
 

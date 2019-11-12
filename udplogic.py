@@ -83,7 +83,8 @@ class UdpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget):
             try:
                 send_msg = (str(self.textEdit_Send.toPlainText())).encode('utf-8')
                 if self.comboBox_TCP.currentIndex() == 2:
-                    msg = 'UDP服务端无法发送，请切换为UDP客户端\n'
+                    self.udp_socket.sendto(send_msg, self.address)
+                    msg = 'UDP客户端已发送\n'
                     self.signal_write_msg.emit(msg)
                 if self.comboBox_TCP.currentIndex() == 3:
                     self.udp_socket.sendto(send_msg, self.address)

@@ -202,7 +202,7 @@
        <x>10</x>
        <y>20</y>
        <width>201</width>
-       <height>71</height>
+       <height>74</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout">
@@ -251,7 +251,7 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_4">
+   <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
       <x>440</x>
@@ -260,21 +260,38 @@
       <height>361</height>
      </rect>
     </property>
-    <property name="cursor">
-     <cursorShape>ArrowCursor</cursorShape>
+    <property name="currentIndex">
+     <number>1</number>
     </property>
-    <property name="title">
-     <string>连接记录</string>
-    </property>
-    <widget class="QTableView" name="tbl_history">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>20</y>
-       <width>331</width>
-       <height>331</height>
-      </rect>
-     </property>
+    <widget class="QWidget" name="tab_client">
+     <attribute name="title">
+      <string>客户端列表</string>
+     </attribute>
+     <widget class="QListView" name="listView">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>341</width>
+        <height>331</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>操作记录</string>
+     </attribute>
+     <widget class="QTableView" name="tbl_history">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>341</width>
+        <height>331</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
