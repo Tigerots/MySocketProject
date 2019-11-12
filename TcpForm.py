@@ -48,7 +48,7 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic):
         # 增加公司服务器默认IP
         self.comboBox_TCP.addItems(self.TcpTypeList)
 
-        self.textEdit_Send.setText("Hello my world...")
+        self.textEdit_Send.setText("Tigerots Hello my world...")
 
 
         # 执行初始化函数
