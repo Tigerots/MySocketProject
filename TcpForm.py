@@ -7,9 +7,9 @@ import datetime
 import socket
 import sys
 # 不生成__pyche__文件
+sys.dont_write_bytecode = True
 from PyQt5.QtCore import QStringListModel
 
-sys.dont_write_bytecode = True
 
 # 这里引入了PyQt5.QtWidgets模块，这个模块包含了基本的组件。
 from PyQt5 import QtCore, QtGui
