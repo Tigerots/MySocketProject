@@ -46,6 +46,15 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic, signalEmit.SignalEmit):
         # 增加公司服务器默认IP
         TcpTypeList = ["TCP服务器", "TCP客户端", "UDP服务器", "UDP客户端", ]
         self.comboBox_TCP.addItems(TcpTypeList)
+        # 使用的物联网协议类型
+        IotProList = ["MQTT协议", "COAP协议", "其他协议", ]
+        self.cbx_mqtt_coap.addItems(IotProList)
+        self.cbx_mqtt_coap.setEnabled(False)
+        # 云平台选择
+        IotPlateformList = ["腾讯物联", "阿里云平台", "机智云平台", ]
+        self.cbx_iot_platform.addItems(IotPlateformList)
+        # self.cbx_mqtt_coap.setEnabled(False)
+
         # 默认发送内容
         self.textEdit_Send.setText("Hello my world...")
         # TODO Hex发送和定时发送还没写,以后用到了再写吧
@@ -93,6 +102,7 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic, signalEmit.SignalEmit):
         # 菜单栏
         self.File_Open.triggered.connect(self.openMsg)
         # 复选框 checkBox
+        self.checkBox_iot.toggled.connect(self.checkBox_iot_fun)
         self.checkBox_GapTime.toggled.connect(self.cbx_GapTime)
         self.checkBox_Hex.toggled.connect(self.cbx_Hex)
         self.lineEdit_GapTime.textChanged.connect(self.edt_GapTime)
@@ -102,6 +112,14 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic, signalEmit.SignalEmit):
         self.signal_write_msg.connect(self.write_msg)
         self.signal_list_ip.connect(self.change_list_ip)
         pass
+
+    # 是否使用物联网协议
+    def checkBox_iot_fun(self):
+        if self.checkBox_iot.isChecked():
+            self.cbx_mqtt_coap.setEnabled(True)
+        else:
+            self.cbx_mqtt_coap.setEnabled(False)
+
 
     # 有新客户端连接, 将客户端IP缓存
     def change_list_ip(self, msg):

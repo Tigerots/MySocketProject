@@ -88,11 +88,7 @@ class TcpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget, signalEmit.Signal
                         self.client_socket_list.remove((client, address))
 
     def tcp_close(self):
-        pass
-        """
-        功能函数，关闭网络连接的方法
-        :return:
-        """
+        """功能函数，关闭网络连接的方法"""
         if self.comboBox_TCP.currentIndex() == 0:
             try:
                 for client, address in self.client_socket_list:
