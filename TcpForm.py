@@ -50,10 +50,6 @@ class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic, signalEmit.SignalEmit):
         IotProList = ["MQTT协议", "COAP协议", "其他协议", ]
         self.cbx_mqtt_coap.addItems(IotProList)
         self.cbx_mqtt_coap.setEnabled(False)
-        # 云平台选择
-        IotPlateformList = ["腾讯物联", "阿里云平台", "机智云平台", ]
-        self.cbx_iot_platform.addItems(IotPlateformList)
-        # self.cbx_mqtt_coap.setEnabled(False)
 
         # 默认发送内容
         self.textEdit_Send.setText("Hello my world...")
