@@ -11,10 +11,10 @@ import hmac
 import random
 import string
 import time
-import sys
+import paho.mqtt.client as mqtt
 
-
-'''
+# 腾讯云登录流程
+''' 
 1. 登录 物联网通信控制台。您可在控制台创建产品、添加设备、并获取设备密钥。
 2. 按照物联网通信约束生成 username 字段，username 字段格式如下：
 
@@ -44,14 +44,13 @@ import sys
 '''
 
 
-
-# 生成指定长度的随机字符串
+# 生成指定长度的随机字符串, 范围为数字和字母
 def RandomConnid(length):
     msg = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
     return msg
 
-# 生成接入物联云需要的各参数
-def IotHmac_tos(productID, devicename, devicePsk):
+# 生成接入腾讯物联云平台需要的各参数
+def tos_IotHmac(productID, devicename, devicePsk):
     # 1. 生成connid为一个随机字符串,方便后台定位问题
     connid = RandomConnid(5)
 
@@ -81,19 +80,14 @@ def IotHmac_tos(productID, devicename, devicePsk):
     }
     pass
 
-import paho.mqtt.client as mqtt
 # 腾讯云MQTT客户端信息结构
-class TosMqttClientInfo(object):
+class Tos_CreatDevInfo(object):
     def __init__(self, productID, devicename, devicePsk):
         self.productID = productID
         self.devicename = devicename
         self.devicePsk = devicePsk
         self.iotsite = '{}.iotcloud.tencentdevices.com'.format(productID)
-
-    def set_ProInfo(self, productID, devicename, devicePsk):
-        self.productID = productID
-        self.devicename = devicename
-        self.devicePsk = devicePsk
+        self.iotport = 1883
 
     def psk_decode(self):
         # base64解码工具
@@ -103,16 +97,20 @@ class TosMqttClientInfo(object):
 
     def get_IotHmac_tos(self):
         # 产生登录用信息
-        IotHmac_tos_list = IotHmac_tos(self.productID, self.devicename, self.devicePsk)
+        IotHmac_tos_list = tos_IotHmac(self.productID, self.devicename, self.devicePsk)
         # print(IotHmac_tos_list)
         return IotHmac_tos_list
 
 
-
+    ''' 测试设备 登录三元组
+    HRDQBHLDHS/TaxiLed_Dev_002/control    订阅
+    HRDQBHLDHS/TaxiLed_Dev_002/data       订阅和发布
+    HRDQBHLDHS/TaxiLed_Dev_002/event      发布
+    '''
 # MQTT客户端类
-class MqttClient_Struct(TosMqttClientInfo):
+class Tos_MqttClient(Tos_CreatDevInfo):
     def __init__(self, productID, devicename, devicePsk):
-        super(MqttClient_Struct,self).__init__(productID, devicename, devicePsk)
+        super(Tos_MqttClient,self).__init__(productID, devicename, devicePsk)
         # 密钥认证为1883, 证书认证为8883
         self.port = 1883
         # 云地址为 productID.iotcloud.tencentdevices.com
@@ -125,60 +123,74 @@ class MqttClient_Struct(TosMqttClientInfo):
         self.client.username_pw_set(self.client_dict.get('username'), self.client_dict.get('password'))
 
         # 定义回调函数
-        self.client.on_connect = self.on_connect
-        self.client.on_message = self.on_message
+        self.client.on_connect = on_connect_callback
+        self.client.on_message = on_message_callback
         pass
 
     def connect(self):
         self.client.connect(self.host, self.port, 60)
-        self.client.subscribe("HRDQBHLDHS/TaxiLed_Dev_002/data")  # 订阅
-        self.client.subscribe("HRDQBHLDHS/TaxiLed_Dev_002/control")  # 订阅
         self.client.loop_forever()
 
-
-    '''
-    HRDQBHLDHS/TaxiLed_Dev_002/control    订阅
-    HRDQBHLDHS/TaxiLed_Dev_002/data       订阅和发布
-    HRDQBHLDHS/TaxiLed_Dev_002/event      发布
-    '''
-
-    # MQTT连接服务器
-    def on_connect(client, userdata, flags, rc):
-        print("Connected with result code " + str(rc))  # 打印连接状态
-        pass
-    # 生产环境: 报文读取,消息处理,超时请求,心跳包,重连管理
-    def on_message(client, userdata, msg):
-        print(msg.topic + " " + ":" + str(msg.payload))  # 打印接受的消息
-        pass
-    # 发布消息
-    def publish(self):
-        pass
-    # 订阅主题
-    def subscribe(self):
-        pass
-    # 取消订阅主题
-    def unsubscribe(self):
-        pass
-    # 查看是否已经连接
-    def isconnect(self):
-        pass
-    # 获取登录错误码
-    def geterrcode(self):
-        pass
+    # # MQTT连接服务器
+    # def on_connect(my_client, userdata, flags, rc):
+    #     print("Connected with result code " + str(rc))  # 打印连接状态
+    #     my_client.subscribe("HRDQBHLDHS/TaxiLed_Dev_002/data")  # 订阅
+    #     # client.subscribe("HRDQBHLDHS/TaxiLed_Dev_002/control")  # 订阅
+    #     pass
+    #
+    # # 生产环境: 报文读取,消息处理,超时请求,心跳包,重连管理
+    # def on_message(client, userdata, msg):
+    #     print(msg.topic + " " + ":" + str(msg.payload))  # 打印接受的消息
 
 
 
+# 当代理响应连接请求时调用
+def on_connect_callback(client, userdata, flags, ret):
+    print("Connected with result code " + str(ret))
+    print("userdata: {}, flags: {}".format(userdata, flags))
+    topic_filter = "HRDQBHLDHS/TaxiLed_Dev_002/data"
+    client.subscribe(topic_filter)
+    pass
+
+# 当与代理断开连接时调用
+def on_disconnect_callback(client, userdata, flags, ret):
+    print("unConnected with result code " + str(ret))
+    print("userdata: {}, flags: {}".format(userdata, flags))
+    pass
+
+# 当收到关于客户订阅的主题的消息时调用
+def on_message_callback(client, userdata, msg):
+    # print("client: {}; userdata: {}".format(client, userdata))
+    print(msg.topic + " " + msg.payload.decode("utf-8"))
+
+# 当使用使用publish()发送的消息已经传输到代理时被调用
+def on_publish_callback(client, userdata, mid):
+    pass
+
+# 当代理响应订阅请求时被调用
+def on_subscribe_callback(client, userdata, mid, granted_qos):
+    pass
+
+# 当代理响应取消订阅请求时调用
+def on_unsubscribe_callback(client, userdata, mid):
+    pass
+
+# 当客户端有日志信息时调用
+def on_log_callback(client, userdata, level, buf):
+    pass
 
 
 
 
 if __name__ == '__main__':
-    # 测试产品 TaxiLedV1_2   产品ID: HRDQBHLDHS
-    # 设备名称:   TaxiLed_Dev_002
-    # key = tigerots0123456789   base64后: dGlnZXJvdHMwMTIzNDU2Nzg5
-    tos_info = MqttClient_Struct("HRDQBHLDHS", "TaxiLed_Dev_002", "dGlnZXJvdHMwMTIzNDU2Nzg5")
+    '''
+    测试产品 TaxiLedV1_2   产品ID: HRDQBHLDHS
+    设备名称:   TaxiLed_Dev_002
+    key = tigerots0123456789   base64后: dGlnZXJvdHMwMTIzNDU2Nzg5
+    '''
+    tos_info = Tos_MqttClient("HRDQBHLDHS", "TaxiLed_Dev_002", "dGlnZXJvdHMwMTIzNDU2Nzg5")
     tos_info.connect()
-
+    print("==============================")
 
 
 
