@@ -16,14 +16,14 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QListWidgetItem
 # 窗口代码自动生成, 最后不要和应用程序放到一个文件, 方便以后更新
-from MyTcpTool import tcplogic
-from MyTcpTool import udplogic
-from MyTcpTool import signalEmit
+from MySocketProject import tcp_logic
+from MySocketProject import udp_logic
+from MySocketProject import signal_emit
 
 
 
 # 主窗口类
-class Form1Win(tcplogic.TcpLogic, udplogic.UdpLogic, signalEmit.SignalEmit):
+class Form1Win(tcp_logic.TcpLogic, udp_logic.UdpLogic, signal_emit.SignalEmit):
     def __init__(self):
         super(Form1Win, self).__init__()
         # 禁止最大化, 禁止拉伸

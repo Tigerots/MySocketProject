@@ -12,12 +12,12 @@ sys.dont_write_bytecode = True
 
 import socket
 import threading
-from MyTcpTool import stopThreading
-from MyTcpTool import Form1
-from MyTcpTool import signalEmit
+from MySocketProject import stop_threading
+from MySocketProject import Form1
+from MySocketProject import signal_emit
 
 
-class UdpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget, signalEmit.SignalEmit):
+class UdpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget, signal_emit.SignalEmit):
     def __init__(self):
         QMainWindow.__init__(self)
         Form1.Ui_MainWindow.__init__(self)
@@ -120,11 +120,11 @@ class UdpLogic(QMainWindow, Form1.Ui_MainWindow, QTableWidget, signalEmit.Signal
             except Exception as ret:
                 pass
         try:
-            stopThreading.stop_thread(self.udp_sever_th)
+            stop_threading.stop_thread(self.udp_sever_th)
         except Exception:
             pass
         try:
-            stopThreading.stop_thread(self.udp_client_th)
+            stop_threading.stop_thread(self.udp_client_th)
         except Exception:
             pass
 
